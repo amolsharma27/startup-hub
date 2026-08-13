@@ -68,9 +68,9 @@ const ContactPage = () => {
   };
 
   const contacts = [
-    { icon: FiMail,    title: 'Email Support',    info: 'hello@startuphub.com',   sub: 'Avg. response: 4 hours' },
-    { icon: FiPhone,   title: 'Direct Hotline',   info: '+1 (555) 432-8765',      sub: 'Mon–Fri, 9am–6pm EST' },
-    { icon: FiMapPin,  title: 'Global HQ',        info: 'San Francisco, CA',      sub: '100 Pine Street, Suite 450' },
+    { icon: FiMail,    title: 'Email Support',    info: 'amolsharma2705@gmail.com',   sub: 'Avg. response: 4 hours' },
+    { icon: FiPhone,   title: 'Direct Hotline',   info: '9814519578',                sub: 'Mon–Fri, 9am–6pm IST' },
+    { icon: FiMapPin,  title: 'Global HQ',        info: 'Ludhiana, Punjab',         sub: 'India' },
   ];
 
   return (

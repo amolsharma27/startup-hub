@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiMail, FiMapPin, FiGithub, FiLinkedin, FiTwitter, FiArrowUpRight } from 'react-icons/fi';
+import { FiMail, FiPhone, FiMapPin, FiGithub, FiLinkedin, FiTwitter, FiArrowUpRight } from 'react-icons/fi';
 import logo from '../assets/logos/sh-logo.jpg';
 
 const platformLinks = [
@@ -118,11 +118,15 @@ const PublicFooter = () => (
           <ul className="space-y-3">
             <li className="flex items-center gap-2.5 text-sm text-muted">
               <FiMail size={14} className="text-primary-400 flex-shrink-0" />
-              hello@startuphub.com
+              amolsharma2705@gmail.com
+            </li>
+            <li className="flex items-center gap-2.5 text-sm text-muted">
+              <FiPhone size={14} className="text-primary-400 flex-shrink-0" />
+              9814519578
             </li>
             <li className="flex items-center gap-2.5 text-sm text-muted">
               <FiMapPin size={14} className="text-primary-400 flex-shrink-0" />
-              San Francisco, CA
+              Ludhiana, Punjab
             </li>
           </ul>
         </div>
