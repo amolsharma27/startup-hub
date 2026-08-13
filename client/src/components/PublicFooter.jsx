@@ -23,8 +23,8 @@ const legalLinks = [
 ];
 
 const socials = [
-  { icon: FiGithub,   href: '#', label: 'GitHub' },
-  { icon: FiLinkedin, href: '#', label: 'LinkedIn' },
+  { icon: FiGithub,   href: 'https://github.com/amolsharma27', label: 'GitHub' },
+  { icon: FiLinkedin, href: 'https://www.linkedin.com/in/amol-sharma-1817473ba/', label: 'LinkedIn' },
   { icon: FiTwitter,  href: '#', label: 'Twitter / X' },
 ];
 
@@ -66,6 +66,8 @@ const PublicFooter = () => (
               <a
                 key={label}
                 href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 className="w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-200
                   dark:border-secondary-700/60 dark:text-secondary-400 dark:hover:border-primary-500/50 dark:hover:text-primary-400 dark:hover:bg-primary-500/10
