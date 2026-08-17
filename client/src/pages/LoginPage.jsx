@@ -23,7 +23,8 @@ const LoginPage = ({ setUser, showToast }) => {
       setAuthToken(data.token, rememberMe);
       setUser(data.user);
       showToast('Welcome back!', 'success');
-      navigate('/dashboard');
+      // Admin goes to admin console; everyone else to dashboard
+      navigate(data.user?.role === 'admin' ? '/admin' : '/dashboard');
     } catch (err) {
       setError(err.message || 'Invalid email or password');
       showToast(err.message || 'Login failed', 'error');
@@ -87,7 +88,7 @@ const LoginPage = ({ setUser, showToast }) => {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate autoComplete="off">
               {/* Email / User Name */}
               <div className="relative flex items-center group">
                 <div className="absolute left-4 flex items-center pointer-events-none transition-colors group-focus-within:text-primary-600 text-secondary-400">
@@ -99,6 +100,7 @@ const LoginPage = ({ setUser, showToast }) => {
                   placeholder="Email Address"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  autoComplete="email"
                   className="w-full pl-11 pr-4 py-3 bg-secondary-50/50 dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 rounded-xl text-sm font-medium text-secondary-900 dark:text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all shadow-sm"
                   required
                 />
@@ -115,6 +117,7 @@ const LoginPage = ({ setUser, showToast }) => {
                   placeholder="Password"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  autoComplete="new-password"
                   className="w-full pl-11 pr-16 py-3 bg-secondary-50/50 dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 rounded-xl text-sm font-medium text-secondary-900 dark:text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all shadow-sm"
                   required
                 />

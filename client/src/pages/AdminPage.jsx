@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { getAuthToken } from '../utils/auth';
+import AdminLayout from '../components/AdminLayout';
 import {
-  FiUsers, FiBriefcase, FiFolder, FiTrash2,
+  FiUsers, FiBriefcase, FiTrash2,
   FiShield, FiSearch, FiMail, FiMessageSquare,
   FiCheckCircle, FiExternalLink, FiClock, FiFilter,
   FiSend, FiChevronRight,
@@ -268,57 +269,36 @@ const AdminPage = ({ user, showToast }) => {
 
   if (!user || user.role !== 'admin' || loading) {
     return (
-      <div className="p-4 md:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-5">
-          <div className="skeleton h-8 w-40 rounded-xl" />
-          <div className="grid md:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => <div key={i} className="skeleton h-24 rounded-2xl" />)}
+      <AdminLayout user={user} activeTab={activeTab} setActiveTab={setActiveTab}>
+        <div className="p-6 md:p-8">
+          <div className="max-w-5xl mx-auto space-y-5">
+            <div className="skeleton h-8 w-40 rounded-xl" />
+            <div className="grid md:grid-cols-3 gap-4">
+              {[1, 2, 3].map((i) => <div key={i} className="skeleton h-24 rounded-2xl" />)}
+            </div>
+            <div className="skeleton h-64 rounded-2xl animate-pulse" />
           </div>
-          <div className="skeleton h-64 rounded-2xl animate-pulse" />
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 relative">
-      <div className="max-w-7xl mx-auto">
+    <AdminLayout user={user} activeTab={activeTab} setActiveTab={setActiveTab}>
+    <div className="p-5 md:p-8 relative">
+      <div className="max-w-5xl mx-auto">
 
         {/* ── Header ── */}
         <div className="flex items-center gap-3 mb-7 animate-fade-in-up">
           <div>
             <div className="flex items-center gap-2.5 mb-0.5">
-              <h1 className="text-2xl font-extrabold text-heading">Admin Operations</h1>
-              <span className="badge badge-red uppercase tracking-wider font-semibold">Admin Panel</span>
+              <h1 className="text-2xl font-extrabold text-heading">Admin Console</h1>
+              <span className="badge badge-red uppercase tracking-wider font-semibold">Restricted</span>
             </div>
             <p className="text-sm text-muted">Monitor statistics, manage platform users, review startups, and reply to inquiries.</p>
           </div>
         </div>
 
-        {/* ── Tab navigation ── */}
-        <div className="flex gap-1.5 mb-6 flex-wrap animate-fade-in-up border-b dark:border-secondary-800 pb-4">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setActiveTab(t.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${
-                activeTab === t.id
-                  ? 'bg-primary-600 text-white shadow-md'
-                  : 'dark:text-secondary-400 light:text-secondary-600 hover:dark:bg-secondary-850 hover:light:bg-secondary-100'
-              }`}
-            >
-              <t.icon size={14} />
-              {t.label}
-              {'count' in t && t.count > 0 && (
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                  activeTab === t.id ? 'bg-white text-primary-600' : 'bg-primary-500 text-white'
-                }`}>
-                  {t.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
 
         {/* ════════════════════════════════
             OVERVIEW TAB
@@ -839,6 +819,7 @@ const AdminPage = ({ user, showToast }) => {
         </div>
       )}
     </div>
+    </AdminLayout>
   );
 };
 

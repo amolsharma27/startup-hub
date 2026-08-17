@@ -215,7 +215,13 @@ const MentorDashboard = ({ stats }) => (
                   {req.mentee?.name?.charAt(0) || '?'}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-heading truncate">{req.mentee?.name || 'Unknown'}</p>
+                  {req.mentee?._id ? (
+                    <Link to={`/users/${req.mentee._id}`} className="text-sm font-semibold text-heading hover:text-primary-600 transition-colors truncate block">
+                      {req.mentee.name}
+                    </Link>
+                  ) : (
+                    <p className="text-sm font-semibold text-heading truncate">{req.mentee?.name || 'Unknown'}</p>
+                  )}
                   <p className="text-xs text-muted truncate max-w-xs">{req.message}</p>
                 </div>
               </div>

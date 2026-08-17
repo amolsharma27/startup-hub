@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import {
   FiCheckCircle, FiClock, FiList, FiCircle,
-  FiLoader, FiAlertCircle, FiPlus, FiX
+  FiLoader, FiAlertCircle, FiPlus, FiX, FiUser
 } from 'react-icons/fi';
 
 /* ── Status config ── */
@@ -42,6 +43,15 @@ const TaskCard = ({ task, onStatusChange, delay = 0 }) => (
         )}
 
         <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted">
+          {task.assignedTo && (
+            <Link
+              to={`/users/${task.assignedTo._id || task.assignedTo}`}
+              className="flex items-center gap-1 text-primary-600 hover:underline font-semibold"
+            >
+              <FiUser size={11} />
+              {task.assignedTo.name || 'Assigned User'}
+            </Link>
+          )}
           {task.startup?.name && (
             <span className="flex items-center gap-1">
               <FiList size={10} className="text-accent-400" />
@@ -210,6 +220,17 @@ const TasksPage = ({ user, showToast }) => {
                     </option>
                   ))}
                 </select>
+                {taskForm.assignedTo && (
+                  <div className="mt-1 flex justify-end">
+                    <Link
+                      to={`/users/${taskForm.assignedTo}`}
+                      target="_blank"
+                      className="text-[11px] font-semibold text-primary-600 hover:underline inline-flex items-center gap-1"
+                    >
+                      View {connections.find(c => c._id === taskForm.assignedTo)?.name}'s Profile & Startups ↗
+                    </Link>
+                  </div>
+                )}
               </div>
               <div>
                 <label className="form-label text-xs">Associated Startup</label>

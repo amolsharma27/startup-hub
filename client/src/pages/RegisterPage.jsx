@@ -172,6 +172,7 @@ const RegisterPage = ({ setUser, showToast }) => {
                   placeholder="Email Address"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  autoComplete="off"
                   className="w-full pl-11 pr-4 py-3 bg-secondary-50/50 dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 rounded-xl text-sm font-medium text-secondary-900 dark:text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all shadow-sm"
                   required
                 />
@@ -189,6 +190,7 @@ const RegisterPage = ({ setUser, showToast }) => {
                     placeholder="Password (Min. 6 characters)"
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    autoComplete="new-password"
                     className="w-full pl-11 pr-16 py-3 bg-secondary-50/50 dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 rounded-xl text-sm font-medium text-secondary-900 dark:text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all shadow-sm"
                     required
                     minLength={6}

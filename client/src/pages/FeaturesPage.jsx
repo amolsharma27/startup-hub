@@ -255,15 +255,14 @@ const FeaturesPage = () => (
   <div className="px-4 sm:px-6 lg:px-8 py-16 max-w-7xl mx-auto animate-fade-in">
 
     {/* Header */}
-    <div className="text-center mb-16 space-y-4">
-      <SectionLabel>Platform Capabilities</SectionLabel>
-      <h1 className="text-4xl md:text-6xl font-extrabold text-heading leading-tight">
-        Tools built for the{' '}
-        <span className="gradient-text">future</span>
-        {' '}of startups
+    <div className="text-center mb-12 space-y-3">
+      <SectionLabel>Features Overview</SectionLabel>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-heading leading-tight">
+        Everything you need to{' '}
+        <span className="text-primary-600">build & scale</span>
       </h1>
-      <p className="text-lg text-muted max-w-3xl mx-auto leading-relaxed">
-        StartupHub is loaded with collaborative workflow features tailored to help builders, contributors, and advisors construct category-defining businesses together.
+      <p className="text-base sm:text-lg text-muted max-w-2xl mx-auto leading-relaxed">
+        Streamlined tools for founders, mentors, and builders to collaborate, recruit talent, and manage projects in one unified workspace.
       </p>
     </div>
 

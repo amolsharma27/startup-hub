@@ -303,6 +303,30 @@ const MentorshipPage = ({ user, showToast }) => {
                     </option>
                   ))}
                 </select>
+                {form.mentor && (
+                  <div className="mt-2.5 p-3 rounded-xl border dark:border-secondary-700 light:border-secondary-200 flex items-center justify-between gap-3 dark:bg-secondary-800/40 light:bg-secondary-50 animate-fade-in">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-lg bg-primary-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">
+                        {mentors.find((m) => m._id === form.mentor)?.name?.charAt(0) || 'M'}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-heading truncate">
+                          {mentors.find((m) => m._id === form.mentor)?.name}
+                        </p>
+                        <p className="text-[11px] text-muted truncate">
+                          {mentors.find((m) => m._id === form.mentor)?.bio || 'Mentor'}
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      to={`/users/${form.mentor}`}
+                      target="_blank"
+                      className="btn-outline !py-1 !px-2.5 text-xs font-semibold flex-shrink-0 inline-flex items-center gap-1"
+                    >
+                      View Profile & Startups ↗
+                    </Link>
+                  </div>
+                )}
               </div>
 
               <div>

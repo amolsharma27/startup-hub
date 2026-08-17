@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiMail, FiPhone, FiMapPin, FiGithub, FiLinkedin, FiTwitter, FiArrowUpRight } from 'react-icons/fi';
+import { FiMail, FiPhone, FiMapPin, FiGithub, FiLinkedin, FiTwitter, FiInstagram, FiArrowUpRight } from 'react-icons/fi';
 import logo from '../assets/logos/sh-logo.jpg';
 
 const platformLinks = [
@@ -51,9 +51,13 @@ const PublicFooter = () => (
 
         {/* Brand column */}
         <div className="col-span-2 lg:col-span-2 space-y-5">
-          <Link to="/" className="flex items-center gap-2.5 group w-fit">
-            <img src={logo} alt="StartupHub" className="h-8 w-auto rounded-lg transition-transform group-hover:scale-105" />
-            <span className="text-base font-bold gradient-text">StartupHub</span>
+          <Link to="/" className="flex items-center gap-2 group w-fit">
+            <img
+              src={logo}
+              alt="StartupHub"
+              className="h-9 w-auto object-contain group-hover:scale-105 transition-transform duration-200"
+            />
+            <span className="text-lg font-extrabold tracking-tight text-primary-600">StartupHub</span>
           </Link>
 
           <p className="text-sm text-muted leading-relaxed max-w-xs">

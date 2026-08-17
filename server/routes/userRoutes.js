@@ -62,6 +62,48 @@ router.get('/connections/all', protect, async (req, res) => {
   }
 });
 
+// GET /api/users - get all community profiles
+router.get('/', protect, async (req, res) => {
+  try {
+    const { role, search } = req.query;
+    const filter = { isActive: { $ne: false } };
+    if (role && role !== 'all') {
+      filter.role = role;
+    }
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { bio: { $regex: search, $options: 'i' } },
+        { skills: { $regex: search, $options: 'i' } }
+      ];
+    }
+    const users = await User.find(filter)
+      .select('-password -email')
+      .populate('followers', 'name profilePhoto')
+      .populate('following', 'name profilePhoto')
+      .sort({ createdAt: -1 });
+
+    const usersWithStartups = await Promise.all(
+      users.map(async (u) => {
+        const userObj = u.toObject();
+        const startups = await Startup.find({
+          $or: [
+            { founder: u._id },
+            { teamMembers: u._id }
+          ]
+        }).populate('category', 'name').select('name logo category status');
+        userObj.startups = startups;
+        userObj.startupsCount = startups.length;
+        return userObj;
+      })
+    );
+
+    res.json({ users: usersWithStartups });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // GET /api/users/:id - view another user's public profile (no password/email exposed)
 router.get('/:id', protect, async (req, res) => {
   try {
@@ -72,21 +114,14 @@ router.get('/:id', protect, async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    const startup = await Startup.findOne({
+    const startups = await Startup.find({
       $or: [
         { founder: user._id },
         { teamMembers: user._id }
       ]
     }).populate('category');
 
-    const startupsCount = await Startup.countDocuments({
-      $or: [
-        { founder: user._id },
-        { teamMembers: user._id }
-      ]
-    });
-
-    res.json({ user, startup, startupsCount });
+    res.json({ user, startups, startupsCount: startups.length, startup: startups[0] || null });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

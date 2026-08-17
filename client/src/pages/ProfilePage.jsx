@@ -1,19 +1,183 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import {
   FiUser, FiMail, FiCalendar, FiGithub, FiLinkedin,
   FiSave, FiCamera, FiShield, FiBookOpen, FiBriefcase,
-  FiArrowRight, FiEdit3, FiX,
+  FiArrowRight, FiEdit3, FiX, FiZoomIn, FiCheck,
 } from 'react-icons/fi';
 
+/* ── Image Crop Modal ── */
+const CropModal = ({ src, onConfirm, onCancel }) => {
+  const canvasRef   = useRef(null);
+  const imgRef      = useRef(new Image());
+  const [zoom,      setZoom]     = useState(1);
+  const [offset,    setOffset]   = useState({ x: 0, y: 0 });
+  const [dragging,  setDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  const SIZE = 300; // canvas display size
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const img = imgRef.current;
+    if (!img.complete) return;
+
+    ctx.clearRect(0, 0, SIZE, SIZE);
+
+    // clip to circle
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(SIZE / 2, SIZE / 2, SIZE / 2, 0, Math.PI * 2);
+    ctx.clip();
+
+    const scale = zoom;
+    const dw = img.naturalWidth  * scale;
+    const dh = img.naturalHeight * scale;
+    const dx = (SIZE - dw) / 2 + offset.x;
+    const dy = (SIZE - dh) / 2 + offset.y;
+    ctx.drawImage(img, dx, dy, dw, dh);
+    ctx.restore();
+
+    // ring
+    ctx.beginPath();
+    ctx.arc(SIZE / 2, SIZE / 2, SIZE / 2 - 1, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(220,38,38,0.6)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }, [zoom, offset]);
+
+  useEffect(() => {
+    imgRef.current.onload = draw;
+    imgRef.current.src = src;
+  }, [src]);
+
+  useEffect(() => { draw(); }, [draw]);
+
+  const onMouseDown = (e) => {
+    setDragging(true);
+    setDragStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
+  };
+  const onMouseMove = (e) => {
+    if (!dragging) return;
+    setOffset({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+  };
+  const onMouseUp   = () => setDragging(false);
+
+  const onTouchStart = (e) => {
+    const t = e.touches[0];
+    setDragging(true);
+    setDragStart({ x: t.clientX - offset.x, y: t.clientY - offset.y });
+  };
+  const onTouchMove = (e) => {
+    if (!dragging) return;
+    const t = e.touches[0];
+    setOffset({ x: t.clientX - dragStart.x, y: t.clientY - dragStart.y });
+  };
+
+  const handleConfirm = () => {
+    // render at higher resolution for upload
+    const OUT = 400;
+    const out = document.createElement('canvas');
+    out.width = out.height = OUT;
+    const ctx  = out.getContext('2d');
+    const img  = imgRef.current;
+    const ratio = OUT / SIZE;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(OUT / 2, OUT / 2, OUT / 2, 0, Math.PI * 2);
+    ctx.clip();
+
+    const dw = img.naturalWidth  * zoom * ratio;
+    const dh = img.naturalHeight * zoom * ratio;
+    const dx = (OUT - dw) / 2 + offset.x * ratio;
+    const dy = (OUT - dh) / 2 + offset.y * ratio;
+    ctx.drawImage(img, dx, dy, dw, dh);
+    ctx.restore();
+
+    out.toBlob((blob) => {
+      const file = new File([blob], 'avatar.png', { type: 'image/png' });
+      onConfirm(file);
+    }, 'image/png');
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-fade-in"
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onMouseUp}
+    >
+      <div className="card p-6 w-full max-w-sm mx-4 space-y-5 shadow-2xl animate-fade-in-up">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-bold text-heading">Crop Photo</h3>
+          <button onClick={onCancel} className="p-1.5 rounded-lg text-muted hover:text-heading transition-colors">
+            <FiX size={18} />
+          </button>
+        </div>
+
+        <p className="text-xs text-muted">Drag to reposition · Use the slider to zoom</p>
+
+        {/* Canvas */}
+        <div className="flex justify-center">
+          <canvas
+            ref={canvasRef}
+            width={SIZE}
+            height={SIZE}
+            onMouseDown={onMouseDown}
+            onTouchStart={onTouchStart}
+            style={{
+              cursor: dragging ? 'grabbing' : 'grab',
+              borderRadius: '50%',
+              width: SIZE,
+              height: SIZE,
+              display: 'block',
+            }}
+          />
+        </div>
+
+        {/* Zoom slider */}
+        <div className="flex items-center gap-3">
+          <FiZoomIn size={14} className="text-muted flex-shrink-0" />
+          <input
+            type="range"
+            min={0.5}
+            max={3}
+            step={0.01}
+            value={zoom}
+            onChange={(e) => setZoom(Number(e.target.value))}
+            className="flex-1 accent-primary-600"
+          />
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={handleConfirm}
+            className="btn-primary flex-1 text-sm flex items-center justify-center gap-1.5"
+          >
+            <FiCheck size={14} /> Apply Crop
+          </button>
+          <button onClick={onCancel} className="btn-outline text-sm">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ProfilePage = ({ showToast }) => {
-  const [user,    setUser]    = useState(null);
-  const [form,    setForm]    = useState({ bio: '', skills: '', education: '', experience: '', github: '', linkedin: '' });
-  const [loading, setLoading] = useState(true);
-  const [saving,  setSaving]  = useState(false);
-  const [editing, setEditing] = useState(false);
+  const [user,      setUser]      = useState(null);
+  const [form,      setForm]      = useState({ bio: '', skills: '', education: '', experience: '', github: '', linkedin: '' });
+  const [loading,   setLoading]   = useState(true);
+  const [saving,    setSaving]    = useState(false);
+  const [editing,   setEditing]   = useState(false);
   const [myStartups, setMyStartups] = useState([]);
+  const [cropSrc,   setCropSrc]   = useState(null); // raw data-URL waiting to be cropped
 
   useEffect(() => {
     const load = async () => {
@@ -66,11 +230,22 @@ const ProfilePage = ({ showToast }) => {
     }
   };
 
-  const handlePhotoUpload = async (e) => {
+  // Step 1 — read file into a data-URL and open the crop modal
+  const handlePhotoSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    // reset input so same file can be re-selected after cancel
+    e.target.value = '';
+    const reader = new FileReader();
+    reader.onload = (ev) => setCropSrc(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  // Step 2 — called by CropModal with the cropped Blob/File
+  const handleCroppedUpload = async (croppedFile) => {
+    setCropSrc(null);
     const formData = new FormData();
-    formData.append('photo', file);
+    formData.append('photo', croppedFile);
     try {
       const data = await api.upload('/users/upload-photo', formData);
       showToast('Profile photo updated', 'success');
@@ -110,7 +285,17 @@ const ProfilePage = ({ showToast }) => {
   const skillList = user?.skills?.length ? user.skills : [];
 
   return (
-    <div className="p-4 md:p-6 lg:p-8">
+    <>
+      {/* Crop modal — rendered outside the page flow */}
+      {cropSrc && (
+        <CropModal
+          src={cropSrc}
+          onConfirm={handleCroppedUpload}
+          onCancel={() => setCropSrc(null)}
+        />
+      )}
+
+      <div className="p-4 md:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto space-y-5">
 
         {/* ── Page header ── */}
@@ -143,7 +328,7 @@ const ProfilePage = ({ showToast }) => {
               </div>
               <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
                 <FiCamera size={18} className="text-white" />
-                <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+                <input type="file" accept="image/*" className="hidden" onChange={handlePhotoSelect} />
               </label>
             </div>
 
@@ -240,6 +425,7 @@ const ProfilePage = ({ showToast }) => {
             </div>
           )}
         </div>
+
 
         {/* ── Edit form ── */}
         {editing && (
@@ -432,7 +618,8 @@ const ProfilePage = ({ showToast }) => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

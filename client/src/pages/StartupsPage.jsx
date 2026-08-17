@@ -33,7 +33,17 @@ const StartupCard = ({ startup, user, onEdit, onDelete }) => {
           <div className="min-w-0">
             <h2 className="text-sm font-bold text-heading truncate leading-tight">{startup.name}</h2>
             <p className="text-xs text-muted mt-0.5 truncate">
-              by {startup.founder?.name || 'Unknown'}
+              by{' '}
+              {startup.founder?._id ? (
+                <Link
+                  to={`/users/${startup.founder._id}`}
+                  className="font-semibold text-heading hover:text-primary-600 transition-colors"
+                >
+                  {startup.founder.name}
+                </Link>
+              ) : (
+                startup.founder?.name || 'Unknown'
+              )}
             </p>
           </div>
         </div>

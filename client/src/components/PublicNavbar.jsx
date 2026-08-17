@@ -43,15 +43,13 @@ const PublicNavbar = () => {
         <div className="flex items-center justify-between h-16 md:h-18">
 
           {/* ── Logo ── */}
-          <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
-            <div className="relative">
-              <img
-                src={logo}
-                alt="StartupHub"
-                className="h-8 w-auto rounded-lg transition-transform duration-300 group-hover:scale-105"
-              />
-            </div>
-            <span className="text-lg font-bold gradient-text hidden sm:block tracking-tight">
+          <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
+            <img
+              src={logo}
+              alt="StartupHub"
+              className="h-9 w-auto object-contain group-hover:scale-105 transition-transform duration-200"
+            />
+            <span className="text-lg sm:text-xl font-extrabold tracking-tight text-primary-600">
               StartupHub
             </span>
           </Link>

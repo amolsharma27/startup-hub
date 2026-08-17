@@ -5,13 +5,7 @@ const NotFoundPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 dark:bg-[#0a0f1e] light:bg-[#F8FAFC] relative overflow-hidden transition-colors duration-300">
-
-      {/* Ambient blobs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute -top-40 -left-40  w-[500px] h-[500px] bg-primary-600/8  rounded-full blur-[120px] animate-float" />
-        <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-accent-500/6  rounded-full blur-[120px] animate-float" style={{ animationDelay: '2s' }} />
-      </div>
+    <div className="min-h-screen flex items-center justify-center p-6 dark:bg-[#0a0a0a] light:bg-[#FAFAFA] relative overflow-hidden transition-colors duration-300">
 
       <div className="relative text-center max-w-lg animate-fade-in-up">
 

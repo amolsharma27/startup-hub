@@ -13,6 +13,7 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import StartupsPage from './pages/StartupsPage';
 import StartupDetailsPage from './pages/StartupDetailsPage';
+import ProfilesPage from './pages/ProfilesPage';
 import ProfilePage from './pages/ProfilePage';
 import UserProfilePage from './pages/UserProfilePage';
 import AdminPage from './pages/AdminPage';
@@ -28,15 +29,16 @@ const ProtectedRoute = ({ children }) => {
   return token ? children : <Navigate to="/login" replace />;
 };
 
+// Redirects admin users away from regular user routes (only after user is loaded)
+const UserRoute = ({ children, user }) => {
+  if (user && user.role === 'admin') return <Navigate to="/admin" replace />;
+  return children;
+};
+
 const AppLayout = ({ children }) => (
   <>
     <Navbar />
-    <div className="min-h-screen dark:bg-[#0a0f1e] light:bg-[#F8FAFC] transition-colors duration-300">
-      {/* Ambient glow — dark mode only */}
-      <div className="dark:block light:hidden fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute top-20 left-10 w-72 h-72 rounded-full blur-3xl animate-float" style={{ background: 'rgba(37,99,235,0.04)' }} />
-        <div className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-3xl animate-float" style={{ background: 'rgba(20,184,166,0.03)', animationDelay: '1.5s' }} />
-      </div>
+    <div className="min-h-screen dark:bg-[#0a0a0a] light:bg-[#FAFAFA] transition-colors duration-300">
       <div className="relative">
         {children}
       </div>
@@ -81,16 +83,17 @@ function App() {
         <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
         <Route path="/login" element={<LoginPage setUser={setUser} showToast={showToast} />} />
         <Route path="/register" element={<RegisterPage setUser={setUser} showToast={showToast} />} />
-        <Route path="/dashboard" element={<ProtectedRoute><AppLayout><DashboardPage user={user} showToast={showToast} /></AppLayout></ProtectedRoute>} />
-        <Route path="/startups" element={<ProtectedRoute><AppLayout><StartupsPage user={user} showToast={showToast} /></AppLayout></ProtectedRoute>} />
-        <Route path="/startups/:id" element={<ProtectedRoute><AppLayout><StartupDetailsPage user={user} showToast={showToast} /></AppLayout></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><AppLayout><ProfilePage showToast={showToast} /></AppLayout></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><UserRoute user={user}><AppLayout><DashboardPage user={user} showToast={showToast} /></AppLayout></UserRoute></ProtectedRoute>} />
+        <Route path="/startups" element={<ProtectedRoute><UserRoute user={user}><AppLayout><StartupsPage user={user} showToast={showToast} /></AppLayout></UserRoute></ProtectedRoute>} />
+        <Route path="/startups/:id" element={<ProtectedRoute><UserRoute user={user}><AppLayout><StartupDetailsPage user={user} showToast={showToast} /></AppLayout></UserRoute></ProtectedRoute>} />
+        <Route path="/profiles" element={<ProtectedRoute><UserRoute user={user}><AppLayout><ProfilesPage user={user} showToast={showToast} /></AppLayout></UserRoute></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><UserRoute user={user}><AppLayout><ProfilePage showToast={showToast} /></AppLayout></UserRoute></ProtectedRoute>} />
         <Route path="/users/:id" element={<ProtectedRoute><AppLayout><UserProfilePage user={user} showToast={showToast} /></AppLayout></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute><AppLayout><AdminPage user={user} showToast={showToast} /></AppLayout></ProtectedRoute>} />
-        <Route path="/tasks" element={<ProtectedRoute><AppLayout><TasksPage user={user} showToast={showToast} /></AppLayout></ProtectedRoute>} />
-        <Route path="/mentorship" element={<ProtectedRoute><AppLayout><MentorshipPage user={user} showToast={showToast} /></AppLayout></ProtectedRoute>} />
-        <Route path="/notifications" element={<ProtectedRoute><AppLayout><NotificationsPage showToast={showToast} /></AppLayout></ProtectedRoute>} />
-        <Route path="/chat" element={<ProtectedRoute><AppLayout><ChatPage user={user} showToast={showToast} /></AppLayout></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute><AdminPage user={user} showToast={showToast} /></ProtectedRoute>} />
+        <Route path="/tasks" element={<ProtectedRoute><UserRoute user={user}><AppLayout><TasksPage user={user} showToast={showToast} /></AppLayout></UserRoute></ProtectedRoute>} />
+        <Route path="/mentorship" element={<ProtectedRoute><UserRoute user={user}><AppLayout><MentorshipPage user={user} showToast={showToast} /></AppLayout></UserRoute></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><UserRoute user={user}><AppLayout><NotificationsPage showToast={showToast} /></AppLayout></UserRoute></ProtectedRoute>} />
+        <Route path="/chat" element={<ProtectedRoute><UserRoute user={user}><AppLayout><ChatPage user={user} showToast={showToast} /></AppLayout></UserRoute></ProtectedRoute>} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
