@@ -64,6 +64,19 @@ app.get('/api/health', (_req, res) => {
   res.json({ message: 'StartupHub server is running' });
 });
 
+// Serve client static assets and SPA fallback in production
+if (process.env.NODE_ENV === 'production') {
+  const clientDistPath = path.join(__dirname, '../client/dist');
+  app.use(express.static(clientDistPath));
+
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
+
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/startuphub')

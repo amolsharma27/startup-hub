@@ -23,6 +23,7 @@ import NotificationsPage from './pages/NotificationsPage';
 import ChatPage from './pages/ChatPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { getAuthToken, clearAuthToken } from './utils/auth';
+import { api } from './services/api';
 
 const ProtectedRoute = ({ children }) => {
   const token = getAuthToken();
@@ -60,10 +61,7 @@ function App() {
   useEffect(() => {
     const token = getAuthToken();
     if (token) {
-      fetch('/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then((res) => res.json())
+      api.get('/auth/me')
         .then((data) => {
           if (data.user) setUser(data.user);
           else clearAuthToken();
