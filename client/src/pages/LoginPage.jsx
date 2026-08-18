@@ -181,12 +181,13 @@ const LoginPage = ({ setUser, showToast }) => {
               <div className="flex-1 h-px bg-secondary-200 dark:bg-secondary-800" />
             </div>
 
-            {/* Other Sign In */}
+            {/* Quick Admin Demo Fill */}
             <button
               type="button"
-              className="w-full py-3 bg-white dark:bg-secondary-800 border border-secondary-300 dark:border-secondary-700 rounded-xl text-sm font-semibold text-secondary-700 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-all flex justify-center items-center gap-2 hover:shadow-sm"
+              onClick={() => setForm({ email: 'admin@startuphub.com', password: 'admin123' })}
+              className="w-full py-2.5 bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800/40 rounded-xl text-xs font-semibold text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-all flex justify-center items-center gap-2 shadow-sm"
             >
-              Sign In with other
+              Fill Admin Credentials (admin@startuphub.com)
             </button>
 
             {/* Sign Up Link */}
