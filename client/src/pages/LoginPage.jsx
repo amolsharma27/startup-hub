@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { setAuthToken } from '../utils/auth';
 import { api } from '../services/api';
-import { FiMail, FiLock, FiArrowLeft } from 'react-icons/fi';
+import { FiMail, FiLock, FiArrowLeft, FiShield, FiUser } from 'react-icons/fi';
 import ThemeToggle from '../components/ThemeToggle';
 import logo from '../assets/logos/sh-logo.jpg';
 
@@ -10,6 +10,7 @@ const LoginPage = ({ setUser, showToast }) => {
   const [form,         setForm]         = useState({ email: '', password: '' });
   const [rememberMe,   setRememberMe]   = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isAdminLogin, setIsAdminLogin] = useState(false);
   const [error,        setError]        = useState('');
   const [isLoading,    setIsLoading]    = useState(false);
   const navigate = useNavigate();
@@ -20,10 +21,20 @@ const LoginPage = ({ setUser, showToast }) => {
     setIsLoading(true);
     try {
       const data = await api.post('/auth/login', form);
+      
+      // If user selected Admin Login tab, ensure account is actually an admin
+      if (isAdminLogin && data.user?.role !== 'admin') {
+        setIsLoading(false);
+        setError('Access denied: Account does not have administrator privileges.');
+        showToast('Access denied for Admin Portal', 'error');
+        return;
+      }
+
       setAuthToken(data.token, rememberMe);
       setUser(data.user);
-      showToast('Welcome back!', 'success');
-      // Admin goes to admin console; everyone else to dashboard
+      showToast(isAdminLogin ? 'Welcome Admin!' : 'Welcome back!', 'success');
+      
+      // Redirect admin to admin console, standard users to dashboard
       navigate(data.user?.role === 'admin' ? '/admin' : '/dashboard');
     } catch (err) {
       setError(err.message || 'Invalid email or password');
@@ -54,7 +65,7 @@ const LoginPage = ({ setUser, showToast }) => {
       </div>
 
       {/* Main Card Container */}
-      <div className="w-full max-w-[850px] min-h-[500px] flex flex-col md:flex-row bg-white dark:bg-secondary-900 rounded-3xl shadow-2xl overflow-hidden relative border border-secondary-200 dark:border-secondary-800 animate-scale-in">
+      <div className="w-full max-w-[850px] min-h-[520px] flex flex-col md:flex-row bg-white dark:bg-secondary-900 rounded-3xl shadow-2xl overflow-hidden relative border border-secondary-200 dark:border-secondary-800 animate-scale-in">
         
         {/* Left Section (Crimson with subtle glow/bubbles) */}
         <div className="relative w-full md:w-[45%] bg-primary-600 p-10 flex flex-col justify-center overflow-hidden">
@@ -66,30 +77,65 @@ const LoginPage = ({ setUser, showToast }) => {
             <div className="bg-white/90 p-3 rounded-2xl inline-block mb-8 shadow-lg backdrop-blur-md">
               <img src={logo} alt="StartupHub" className="h-10 w-auto" />
             </div>
-            <h2 className="text-3xl font-black tracking-wider mb-2 uppercase">Welcome Back</h2>
-            <h3 className="text-lg font-bold mb-6 tracking-wide uppercase opacity-90 border-b border-white/20 pb-4 inline-block">StartupHub Builders</h3>
+            <h2 className="text-3xl font-black tracking-wider mb-2 uppercase">
+              {isAdminLogin ? 'Admin Portal' : 'Welcome Back'}
+            </h2>
+            <h3 className="text-lg font-bold mb-6 tracking-wide uppercase opacity-90 border-b border-white/20 pb-4 inline-block">
+              StartupHub {isAdminLogin ? 'Console' : 'Builders'}
+            </h3>
             <p className="text-primary-100 text-xs leading-relaxed max-w-[250px] font-medium opacity-90">
-              Join thousands of founders, mentors, and builders collaborating to turn bold ideas into real companies.
+              {isAdminLogin
+                ? 'Manage users, startups, applications, and system settings securely.'
+                : 'Join thousands of founders, mentors, and builders collaborating to turn bold ideas into real companies.'}
             </p>
           </div>
         </div>
 
         {/* Right Section (Form) */}
-        <div className="w-full md:w-[55%] p-10 lg:px-14 lg:py-12 flex flex-col justify-center bg-white dark:bg-secondary-900 text-secondary-900 dark:text-white transition-colors duration-300">
+        <div className="w-full md:w-[55%] p-8 lg:px-12 lg:py-10 flex flex-col justify-center bg-white dark:bg-secondary-900 text-secondary-900 dark:text-white transition-colors duration-300">
           <div className="w-full max-w-sm mx-auto animate-fade-in-up delay-200">
-            <h1 className="text-[26px] font-bold mb-1">Sign in</h1>
-            <p className="text-secondary-400 dark:text-secondary-500 text-[11px] font-semibold mb-8 uppercase tracking-wider">
-              Login to your StartupHub account
+            
+            {/* Mode Switcher Tabs (User vs Admin Login) */}
+            <div className="flex p-1 bg-secondary-100 dark:bg-secondary-800 rounded-2xl mb-6 border border-secondary-200 dark:border-secondary-700">
+              <button
+                type="button"
+                onClick={() => { setIsAdminLogin(false); setError(''); }}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  !isAdminLogin
+                    ? 'bg-white dark:bg-secondary-900 text-primary-600 dark:text-primary-400 shadow-sm'
+                    : 'text-secondary-500 hover:text-secondary-700 dark:hover:text-secondary-300'
+                }`}
+              >
+                <FiUser size={13} /> User Login
+              </button>
+              <button
+                type="button"
+                onClick={() => { setIsAdminLogin(true); setError(''); }}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  isAdminLogin
+                    ? 'bg-primary-600 text-white shadow-sm'
+                    : 'text-secondary-500 hover:text-secondary-700 dark:hover:text-secondary-300'
+                }`}
+              >
+                <FiShield size={13} /> Admin Login
+              </button>
+            </div>
+
+            <h1 className="text-[24px] font-bold mb-1">
+              {isAdminLogin ? 'Admin Sign In' : 'Sign in'}
+            </h1>
+            <p className="text-secondary-400 dark:text-secondary-500 text-[11px] font-semibold mb-6 uppercase tracking-wider">
+              {isAdminLogin ? 'Enter your admin credentials manually' : 'Login to your StartupHub account'}
             </p>
 
             {error && (
-              <div className="mb-6 p-3 rounded-xl bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800/30 text-danger-600 dark:text-danger-400 text-xs font-medium flex items-center animate-shake">
+              <div className="mb-5 p-3 rounded-xl bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800/30 text-danger-600 dark:text-danger-400 text-xs font-medium flex items-center animate-shake">
                 <span>{error}</span>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4" noValidate autoComplete="off">
-              {/* Email / User Name */}
+              {/* Email */}
               <div className="relative flex items-center group">
                 <div className="absolute left-4 flex items-center pointer-events-none transition-colors group-focus-within:text-primary-600 text-secondary-400">
                   <FiMail size={16} />
@@ -97,7 +143,7 @@ const LoginPage = ({ setUser, showToast }) => {
                 <input
                   id="email"
                   type="email"
-                  placeholder="Email Address"
+                  placeholder={isAdminLogin ? "Admin Email Address" : "Email Address"}
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   autoComplete="email"
@@ -114,7 +160,7 @@ const LoginPage = ({ setUser, showToast }) => {
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Password"
+                  placeholder={isAdminLogin ? "Admin Password" : "Password"}
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   autoComplete="new-password"
@@ -163,40 +209,26 @@ const LoginPage = ({ setUser, showToast }) => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 mt-6 btn-gradient text-white rounded-xl text-sm font-bold shadow-md shadow-primary-500/20 transition-all active:scale-[0.98] hover:shadow-glow disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center overflow-hidden relative group"
+                className="w-full py-3.5 mt-4 btn-gradient text-white rounded-xl text-sm font-bold shadow-md shadow-primary-500/20 transition-all active:scale-[0.98] hover:shadow-glow disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center overflow-hidden relative group"
               >
                 <div className="absolute inset-0 bg-white/20 w-[150%] h-[150%] -translate-x-full rotate-45 group-hover:animate-[shimmer_1.5s_infinite]"></div>
                 {isLoading ? (
                   <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
-                  'Sign in'
+                  isAdminLogin ? 'Sign in as Admin' : 'Sign in'
                 )}
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="flex items-center my-6">
-              <div className="flex-1 h-px bg-secondary-200 dark:bg-secondary-800" />
-              <span className="px-3 text-[10px] font-bold text-secondary-400 dark:text-secondary-500 uppercase tracking-widest">or</span>
-              <div className="flex-1 h-px bg-secondary-200 dark:bg-secondary-800" />
-            </div>
-
-            {/* Quick Admin Demo Fill */}
-            <button
-              type="button"
-              onClick={() => setForm({ email: 'admin@startuphub.com', password: 'admin123' })}
-              className="w-full py-2.5 bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800/40 rounded-xl text-xs font-semibold text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-all flex justify-center items-center gap-2 shadow-sm"
-            >
-              Fill Admin Credentials (admin@startuphub.com)
-            </button>
-
             {/* Sign Up Link */}
-            <p className="text-center text-[11px] text-secondary-500 dark:text-secondary-400 mt-8 font-medium">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-primary-600 dark:text-primary-500 font-bold hover:underline transition-colors">
-                Sign Up
-              </Link>
-            </p>
+            {!isAdminLogin && (
+              <p className="text-center text-[11px] text-secondary-500 dark:text-secondary-400 mt-6 font-medium">
+                Don't have an account?{' '}
+                <Link to="/register" className="text-primary-600 dark:text-primary-500 font-bold hover:underline transition-colors">
+                  Sign Up
+                </Link>
+              </p>
+            )}
           </div>
         </div>
       </div>
