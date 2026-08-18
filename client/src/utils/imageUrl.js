@@ -2,9 +2,14 @@
  * Safely format and encode uploaded image URLs (profile photos, startup logos, banners).
  * Handles relative paths, spaces in filenames, base64 data strings, and decoupled API URLs.
  */
-export const getImageUrl = (path) => {
-  if (!path) return '';
-  
+export const getImageUrl = (path, fallbackName = '') => {
+  if (!path || path === 'null' || path === 'undefined') {
+    if (fallbackName) {
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName)}&background=dc2626&color=fff&bold=true&rounded=true`;
+    }
+    return '';
+  }
+
   // Return untouched if base64 data-URL, blob URL, or full HTTP/HTTPS URL
   if (
     path.startsWith('data:') ||
@@ -29,4 +34,12 @@ export const getImageUrl = (path) => {
   }
 
   return encodedPath;
+};
+
+/**
+ * Image fallback error handler to prevent broken image icons.
+ */
+export const handleImageError = (e, fallbackName = 'User') => {
+  e.target.onerror = null; // Prevent infinite loop
+  e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName)}&background=dc2626&color=fff&bold=true&rounded=true`;
 };

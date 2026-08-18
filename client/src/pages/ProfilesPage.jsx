@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { getImageUrl } from '../utils/imageUrl';
+import { getImageUrl, handleImageError } from '../utils/imageUrl';
 import {
   FiSearch, FiUsers, FiUserCheck, FiUserPlus, FiBriefcase,
   FiArrowRight, FiExternalLink, FiCheck
@@ -178,8 +178,9 @@ const ProfilesPage = ({ user: currentUser, showToast }) => {
                         style={{ minWidth: '4rem', minHeight: '4rem' }}
                       >
                         <img
-                          src={getImageUrl(profile.profilePhoto)}
+                          src={getImageUrl(profile.profilePhoto, profile.name)}
                           alt={profile.name}
+                          onError={(e) => handleImageError(e, profile?.name)}
                           className="w-full h-full object-cover object-center"
                         />
                       </div>

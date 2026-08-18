@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { clearAuthToken, getAuthToken } from '../utils/auth';
-import { getImageUrl } from '../utils/imageUrl';
+import { getImageUrl, handleImageError } from '../utils/imageUrl';
 import { useState, useEffect, useRef } from 'react';
 import ThemeToggle from './ThemeToggle';
 import logo from '../assets/logos/sh-logo.jpg';
@@ -169,7 +169,12 @@ const Navbar = () => {
                 {/* Avatar */}
                 <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${roleColor} flex items-center justify-center text-white text-xs font-bold shadow-sm overflow-hidden`}>
                   {user?.profilePhoto ? (
-                    <img src={getImageUrl(user.profilePhoto)} alt={user.name} className="w-full h-full object-cover" />
+                    <img 
+                      src={getImageUrl(user.profilePhoto, user.name)} 
+                      alt={user.name} 
+                      onError={(e) => handleImageError(e, user?.name)}
+                      className="w-full h-full object-cover" 
+                    />
                   ) : (
                     initials
                   )}

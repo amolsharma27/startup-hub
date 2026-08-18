@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { getImageUrl } from '../utils/imageUrl';
+import { getImageUrl, handleImageError } from '../utils/imageUrl';
 import {
   FiGithub, FiLinkedin, FiBookOpen, FiBriefcase,
   FiArrowLeft, FiUser, FiMail, FiCalendar, FiCheck, FiUserPlus
@@ -142,8 +142,9 @@ const UserProfilePage = ({ user: loggedInUser, showToast }) => {
             <div className="flex-shrink-0">
               {user.profilePhoto ? (
                 <img
-                  src={getImageUrl(user.profilePhoto)}
+                  src={getImageUrl(user.profilePhoto, user.name)}
                   alt={user.name}
+                  onError={(e) => handleImageError(e, user?.name)}
                   className="w-20 h-20 rounded-2xl object-cover ring-2 ring-primary-600/20 shadow-sm"
                 />
               ) : (

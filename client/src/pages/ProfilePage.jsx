@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { getImageUrl } from '../utils/imageUrl';
+import { getImageUrl, handleImageError } from '../utils/imageUrl';
 import {
   FiUser, FiMail, FiCalendar, FiGithub, FiLinkedin,
   FiSave, FiCamera, FiShield, FiBookOpen, FiBriefcase,
@@ -320,7 +320,12 @@ const ProfilePage = ({ showToast }) => {
             <div className="relative group flex-shrink-0">
               <div className="w-20 h-20 rounded-2xl overflow-hidden">
                 {user?.profilePhoto ? (
-                  <img src={getImageUrl(user.profilePhoto)} alt={user.name} className="w-full h-full object-cover" />
+                  <img 
+                    src={getImageUrl(user.profilePhoto, user.name)} 
+                    alt={user.name} 
+                    onError={(e) => handleImageError(e, user?.name)}
+                    className="w-full h-full object-cover" 
+                  />
                 ) : (
                   <div className={`w-full h-full bg-gradient-to-br ${roleColor} flex items-center justify-center text-white font-extrabold text-2xl`}>
                     {initials}
