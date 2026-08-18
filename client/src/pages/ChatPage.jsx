@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
+import { getImageUrl } from '../utils/imageUrl';
 import { FiMessageSquare, FiSend, FiUsers, FiHash } from 'react-icons/fi';
 
 const ChatPage = ({ user, showToast }) => {
@@ -260,7 +261,7 @@ const ChatPage = ({ user, showToast }) => {
                     >
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden animate-scale-in">
                         {selectedStartupInfo.founder?.profilePhoto ? (
-                          <img src={selectedStartupInfo.founder.profilePhoto} alt={selectedStartupInfo.founder?.name} className="w-full h-full object-cover" />
+                          <img src={getImageUrl(selectedStartupInfo.founder.profilePhoto)} alt={selectedStartupInfo.founder?.name} className="w-full h-full object-cover" />
                         ) : (
                           selectedStartupInfo.founder?.name?.charAt(0).toUpperCase() || 'F'
                         )}
@@ -286,7 +287,7 @@ const ChatPage = ({ user, showToast }) => {
                           >
                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden animate-scale-in">
                               {m.profilePhoto ? (
-                                <img src={m.profilePhoto} alt={m.name} className="w-full h-full object-cover" />
+                                <img src={getImageUrl(m.profilePhoto)} alt={m.name} className="w-full h-full object-cover" />
                               ) : (
                                 m.name?.charAt(0).toUpperCase() || 'M'
                               )}

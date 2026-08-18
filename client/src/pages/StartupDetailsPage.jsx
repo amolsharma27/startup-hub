@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
+import { getImageUrl } from '../utils/imageUrl';
 import {
   FiArrowLeft, FiEdit2, FiSend, FiUsers, FiCheckSquare,
   FiClipboard, FiPlus, FiClock, FiStar, FiX, FiCalendar,
@@ -362,7 +363,7 @@ const StartupDetailsPage = ({ user, showToast }) => {
                   >
                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden">
                       {member.profilePhoto ? (
-                        <img src={member.profilePhoto} alt={member.name} className="w-full h-full object-cover animate-scale-in" />
+                        <img src={getImageUrl(member.profilePhoto)} alt={member.name} className="w-full h-full object-cover animate-scale-in" />
                       ) : (
                         member.name?.charAt(0)?.toUpperCase() || '?'
                       )}
